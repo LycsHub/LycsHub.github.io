@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat-16*16.ico">
+  <link rel="mask-icon" href="/images/cat-32*32.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lycshub.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="渗透测试流程整理一下渗透测试的流程，备忘，长期更新">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试流程">
+<meta property="og:url" content="https://lycshub.github.io/2021/11/17/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Lyc&#39;s Blog">
+<meta property="og:description" content="渗透测试流程整理一下渗透测试的流程，备忘，长期更新">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-17T03:02:37.000Z">
+<meta property="article:modified_time" content="2021-11-22T02:09:39.829Z">
+<meta property="article:author" content="Harry Smith">
+<meta property="article:tag" content="渗透">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lycshub.github.io/2021/11/17/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>渗透测试流程 | Lyc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-212139889-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-212139889-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lyc's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://lycshub.github.io/2021/11/17/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+      <meta itemprop="name" content="Harry Smith">
+      <meta itemprop="description" content="取次花丛懒回顾，半缘修道半缘君">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lyc's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          渗透测试流程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-17 11:02:37" itemprop="dateCreated datePublished" datetime="2021-11-17T11:02:37+08:00">2021-11-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-11-22 10:09:39" itemprop="dateModified" datetime="2021-11-22T10:09:39+08:00">2021-11-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">渗透测试</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/11/17/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/11/17/渗透测试流程/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="渗透测试流程"><a href="#渗透测试流程" class="headerlink" title="渗透测试流程"></a>渗透测试流程</h2><p>整理一下渗透测试的流程，备忘，长期更新</p>
+<span id="more"></span>
+
+<h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><ul>
+<li><p>真实ip,网段，域名</p>
+<p>whatweb</p>
+</li>
+<li><p>开放端口对应服务</p>
+<p>nmap</p>
+</li>
+<li><p>子域名收集</p>
+<p>oneforall</p>
+</li>
+<li><p>whois</p>
+</li>
+<li><p>旁站，c段</p>
+<p>ladon</p>
+</li>
+<li><p>操作系统信息</p>
+<p>wapplyzer,nmap</p>
+</li>
+<li><p>应用信息</p>
+<p>wapplyzer</p>
+<p>whatweb</p>
+</li>
+<li><p>网站后台</p>
+<p>dirmap</p>
+</li>
+</ul>
+<h3 id="漏洞探测＆利用"><a href="#漏洞探测＆利用" class="headerlink" title="漏洞探测＆利用"></a>漏洞探测＆利用</h3><ul>
+<li>AWVS</li>
+<li>vulmap</li>
+<li>nessus</li>
+<li>xray</li>
+</ul>
+<p>发现漏洞后进行利用：</p>
+<h4 id="自动化验证：结合自动化扫描工具提供的结果。"><a href="#自动化验证：结合自动化扫描工具提供的结果。" class="headerlink" title="自动化验证：结合自动化扫描工具提供的结果。"></a>自动化验证：结合自动化扫描工具提供的结果。</h4><h4 id="试验验证：自己搭建模拟环境进行验证。"><a href="#试验验证：自己搭建模拟环境进行验证。" class="headerlink" title="试验验证：自己搭建模拟环境进行验证。"></a>试验验证：自己搭建模拟环境进行验证。</h4><h4 id="登陆猜解：爆破"><a href="#登陆猜解：爆破" class="headerlink" title="登陆猜解：爆破"></a>登陆猜解：爆破</h4><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/lijiejie/htpwdScan">https://github.com/lijiejie/htpwdScan</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/yzddmr6/WebCrack">https://github.com/yzddmr6/WebCrack</a></li>
+</ul>
+<h4 id="业务漏洞验证：如发现业务漏洞，要进行验证。"><a href="#业务漏洞验证：如发现业务漏洞，要进行验证。" class="headerlink" title="业务漏洞验证：如发现业务漏洞，要进行验证。"></a>业务漏洞验证：如发现业务漏洞，要进行验证。</h4><h3 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h3><p>内网流量代理：<a target="_blank" rel="noopener" href="https://github.com/L-codes/Neo-reGeorg">https://github.com/L-codes/Neo-reGeorg</a></p>
+<p>ladon　<a target="_blank" rel="noopener" href="https://github.com/k8gege/Ladon">https://github.com/k8gege/Ladon</a></p>
+<p>三大测试框架：</p>
+<p>Metasploit、Empire、Cobalt Strike</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3975">https://xz.aliyun.com/t/3975</a></p>
+<h3 id="权限维持"><a href="#权限维持" class="headerlink" title="权限维持"></a>权限维持</h3><ul>
+<li><p>windows权限维持</p>
+<p>隐藏，后门</p>
+</li>
+<li><p>linux权限维持</p>
+<p>隐藏，后门</p>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://bypass007.github.io/Emergency-Response-Notes/privilege/%E7%AC%AC6%E7%AF%87%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%A1%86%E6%9E%B6%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81%E6%8A%80%E6%9C%AF.html">权限维持</a></p>
+<p>MSF权限维持</p>
+<p>Empire权限维持</p>
+<p>Cobalt Strike权限维持</p>
+<h3 id="清理痕迹"><a href="#清理痕迹" class="headerlink" title="清理痕迹"></a>清理痕迹</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%B8%97%E9%80%8F/" rel="tag"># 渗透</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/16/Web%E6%89%AB%E6%8F%8F%E5%99%A8-%E5%AD%90%E5%9F%9F%E6%89%AB%E6%8F%8F/" rel="prev" title="Web扫描器-子域扫描">
+      <i class="fa fa-chevron-left"></i> Web扫描器-子域扫描
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/17/%E7%88%86%E7%A0%B4%E5%90%8E%E5%8F%B0-htpwdScan/" rel="next" title="爆破后台-htpwdScan">
+      爆破后台-htpwdScan <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">渗透测试流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="nav-number">1.1.</span> <span class="nav-text">信息收集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E6%8E%A2%E6%B5%8B%EF%BC%86%E5%88%A9%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">漏洞探测＆利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E9%AA%8C%E8%AF%81%EF%BC%9A%E7%BB%93%E5%90%88%E8%87%AA%E5%8A%A8%E5%8C%96%E6%89%AB%E6%8F%8F%E5%B7%A5%E5%85%B7%E6%8F%90%E4%BE%9B%E7%9A%84%E7%BB%93%E6%9E%9C%E3%80%82"><span class="nav-number">1.2.1.</span> <span class="nav-text">自动化验证：结合自动化扫描工具提供的结果。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%95%E9%AA%8C%E9%AA%8C%E8%AF%81%EF%BC%9A%E8%87%AA%E5%B7%B1%E6%90%AD%E5%BB%BA%E6%A8%A1%E6%8B%9F%E7%8E%AF%E5%A2%83%E8%BF%9B%E8%A1%8C%E9%AA%8C%E8%AF%81%E3%80%82"><span class="nav-number">1.2.2.</span> <span class="nav-text">试验验证：自己搭建模拟环境进行验证。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%99%BB%E9%99%86%E7%8C%9C%E8%A7%A3%EF%BC%9A%E7%88%86%E7%A0%B4"><span class="nav-number">1.2.3.</span> <span class="nav-text">登陆猜解：爆破</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%EF%BC%9A%E5%A6%82%E5%8F%91%E7%8E%B0%E4%B8%9A%E5%8A%A1%E6%BC%8F%E6%B4%9E%EF%BC%8C%E8%A6%81%E8%BF%9B%E8%A1%8C%E9%AA%8C%E8%AF%81%E3%80%82"><span class="nav-number">1.2.4.</span> <span class="nav-text">业务漏洞验证：如发现业务漏洞，要进行验证。</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F"><span class="nav-number">1.3.</span> <span class="nav-text">内网渗透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="nav-number">1.4.</span> <span class="nav-text">权限维持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%85%E7%90%86%E7%97%95%E8%BF%B9"><span class="nav-number">1.5.</span> <span class="nav-text">清理痕迹</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Harry Smith"
+      src="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+  <p class="site-author-name" itemprop="name">Harry Smith</p>
+  <div class="site-description" itemprop="description">取次花丛懒回顾，半缘修道半缘君</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Harry Smith</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://harrysmith-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lycshub.github.io/2021/11/17/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E6%B5%81%E7%A8%8B/";
+    this.page.identifier = "2021/11/17/渗透测试流程/";
+    this.page.title = "渗透测试流程";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://harrysmith-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

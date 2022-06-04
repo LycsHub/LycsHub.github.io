@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat-16*16.ico">
+  <link rel="mask-icon" href="/images/cat-32*32.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lycshub.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="继续整理最近新接触的工具，Web扫描器专场,xray和vulmap一直没系统整理过">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web扫描器工具整理">
+<meta property="og:url" content="https://lycshub.github.io/2021/11/11/web%E6%89%AB%E6%8F%8F%E5%99%A8%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Lyc&#39;s Blog">
+<meta property="og:description" content="继续整理最近新接触的工具，Web扫描器专场,xray和vulmap一直没系统整理过">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636609521088-2021-11-1113:45:21.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636609356730-2021-11-1113:42:36.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636608914853-2021-11-1113:35:14.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636609172503-2021-11-1113:39:32.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636610888790-2021-11-1114:08:08.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636610739920-2021-11-1114:05:39.png">
+<meta property="article:published_time" content="2021-11-11T01:27:50.000Z">
+<meta property="article:modified_time" content="2022-03-28T11:46:15.306Z">
+<meta property="article:author" content="Harry Smith">
+<meta property="article:tag" content="扫描器">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1636609521088-2021-11-1113:45:21.png">
+
+<link rel="canonical" href="https://lycshub.github.io/2021/11/11/web%E6%89%AB%E6%8F%8F%E5%99%A8%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Web扫描器工具整理 | Lyc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-212139889-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-212139889-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lyc's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://lycshub.github.io/2021/11/11/web%E6%89%AB%E6%8F%8F%E5%99%A8%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+      <meta itemprop="name" content="Harry Smith">
+      <meta itemprop="description" content="取次花丛懒回顾，半缘修道半缘君">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lyc's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Web扫描器工具整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-11 09:27:50" itemprop="dateCreated datePublished" datetime="2021-11-11T09:27:50+08:00">2021-11-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-28 19:46:15" itemprop="dateModified" datetime="2022-03-28T19:46:15+08:00">2022-03-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">Web安全</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/11/11/web%E6%89%AB%E6%8F%8F%E5%99%A8%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/11/11/web扫描器工具整理/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>继续整理最近新接触的工具，Web扫描器专场,xray和vulmap一直没系统整理过</p>
+<span id="more"></span>
+
+<h2 id="xray"><a href="#xray" class="headerlink" title="xray"></a><a target="_blank" rel="noopener" href="https://github.com/chaitin/xray">xray</a></h2><p>三种模式</p>
+<p>直接扫单个站</p>
+<p><code>./xray webscan --url xxx.com</code></p>
+<h3 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h3><p><code>./xray webscan --url xxx.com --listen 127.0.0.1:7777</code></p>
+<ul>
+<li>配置目标站点</li>
+</ul>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1636609521088-2021-11-1113:45:21.png"></p>
+<p><strong>值得注意的是官方提供的例子中这个awvs的靶场似乎已经被墙，所以需要在<code>config.yml</code>配置中添加<code>proxy</code>,配置其上游代理然后就能正常访问</strong></p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1636609356730-2021-11-1113:42:36.png"></p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1636608914853-2021-11-1113:35:14.png"></p>
+<h4 id="结合bp使用"><a href="#结合bp使用" class="headerlink" title="结合bp使用"></a>结合bp使用</h4><blockquote>
+<p>因为更多的使用场景在于一边浏览浏览器xray一边分析，所以结合bp来进行很有必要</p>
+</blockquote>
+<p>启动命令代理模式一样，需要在bp里面加一个上游代理</p>
+<p><strong>bp中上游代理和socks代理不能混用</strong></p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1636609172503-2021-11-1113:39:32.png"></p>
+<p>所以用上了bp之后加上之前xray的上游代理形成了一条代理链</p>
+<p><code>socks5://127.0.0.1:1080(我的v2ray代理)</code>&gt;<code>http://127.0.0.1:7777(我的xray代理)</code>&gt;<code>http://127.0.0.1:10086(我的bp代理)</code></p>
+<p>不需要xray本身代理的时候可以把第一条去掉，而配置文件中还有对请求本身的代理配置，不在赘述，需要用时翻文档就行</p>
+<h3 id="爬虫模式"><a href="#爬虫模式" class="headerlink" title="爬虫模式"></a>爬虫模式</h3><p>并且输出html格式的报告</p>
+<ul>
+<li>xray不能处理js渲染</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./xray_linux_amd64 webscan --basic-crawler http://testphp.vulnweb.com/ --html-output xray-crawler-testphp.html</span><br></pre></td></tr></table></figure>
+
+<p><strong>如果需要登录网站需要手动设置cookie,在配置文件<code>http</code>的<code>Hearders</code>中</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">http：</span></span><br><span class="line">	<span class="string">headers：</span></span><br><span class="line">		<span class="string">Cookie：key=value</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="服务扫描模式"><a href="#服务扫描模式" class="headerlink" title="服务扫描模式"></a>服务扫描模式</h3><p>支持两种方式</p>
+<ol>
+<li><p>快速检测单个目标<br>   <code>./xray servicescan --target 127.0.0.1:8009</code></p>
+</li>
+<li><p>批量检查的 1.file 中的目标, 一行一个目标，带端口<br>   <code>./xray servicescan --target-file 1.file</code> </p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">输出的文件格式</span><br><span class="line">--html-output [FILE]</span><br><span class="line">--json-output [FILE]</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://docs.xray.cool/#/README">xray官方文档</a></p>
+<h2 id="dismap"><a href="#dismap" class="headerlink" title="dismap"></a><a target="_blank" rel="noopener" href="https://github.com/zhzyker/dismap/tree/v0.2">dismap</a></h2><p>这个和下面这个都是<a target="_blank" rel="noopener" href="https://github.com/zhzyker">之乎者也</a>大佬写的，dismap侧重于资产搜集，比较新的一个工具，但是和vulmap可以联动使用</p>
+<p>主页给了一些简单地参数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">-file string</span><br><span class="line">    Select a URL file for batch identification</span><br><span class="line">    # 从文件中读取 Url 进行批量识别</span><br><span class="line">-ip string</span><br><span class="line">    Network segment [e.g. -ip 192.168.1.0/24 or -ip 192.168.1.1-10]</span><br><span class="line">    # 指定一个网段,格式示例: 192.168.1.1/24  192.168.1.1-100  192.168.1.1-192.168.1.254</span><br><span class="line">-np</span><br><span class="line">    Not use ICMP/PING to detect surviving hosts</span><br><span class="line">    # 不进行主机存活检测,跳过存活检测直接识别 Url</span><br><span class="line">-output string</span><br><span class="line">    Save the scan results to the specified file (default &quot;output.txt&quot;)</span><br><span class="line">    # 自定义识别结果输出文件,默认追加到 output.txt 中,此选项中输出的文件可以直接通过vulmap -f参数来扫描</span><br><span class="line">-port string</span><br><span class="line">    Custom scan ports [e.g. -port 80,443 or -port 1-65535]</span><br><span class="line">    # 自定义需要扫描的 Web 端口,默认端口在 /config/config.go 中</span><br><span class="line">-thread int</span><br><span class="line">    Number of concurrent threads, (adapted to two network segments 2x254) (default 508)</span><br><span class="line">    # 多线程数量,默认508(两个C段的数量),线程越高存活和识别丢失率可能越高,不建议超过2000</span><br><span class="line">-timeout int</span><br><span class="line">    Response timeout time, the default is 5 seconds (default 5)</span><br><span class="line">    # 主机存活探测和 Http 超时时间,默认均为5秒</span><br><span class="line">-url string</span><br><span class="line">    Specify a target URL [e.g. -url https://example.com]</span><br><span class="line">    # 识别单个 Url 时用该选项指定</span><br></pre></td></tr></table></figure>
+
+<p>然后通过规则库可以自定义识别的指纹，批量验证，规则库很好上手，也在md写全了</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1636610888790-2021-11-1114:08:08.png"></p>
+<h2 id="vulmap"><a href="#vulmap" class="headerlink" title="vulmap"></a><a target="_blank" rel="noopener" href="https://github.com/zhzyker/vulmap">vulmap</a></h2><p>这个主要是漏洞扫描和验证</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">可选参数:</span><br><span class="line">  -h, --help            显示此帮助消息并退出</span><br><span class="line">  -u URL, --url URL     目标 URL (e.g. -u &quot;http://example.com&quot;)</span><br><span class="line">  -f FILE, --file FILE  选择一个目标列表文件,每个url必须用行来区分 (e.g. -f &quot;/home/user/list.txt&quot;)</span><br><span class="line">  --fofa keyword        使用 fofa api 批量扫描 (e.g. --fofa &quot;app=Apache-Shiro&quot;)</span><br><span class="line">  --shodan keyword      使用 shodan api 批量扫描 (e.g. --shodan &quot;Shiro&quot;)</span><br><span class="line">  -m MODE, --mode MODE  模式支持&quot;poc&quot;和&quot;exp&quot;,可以省略此选项,默认进入&quot;poc&quot;模式</span><br><span class="line">  -a APP [APP ...]      指定 webapps（e.g. &quot;weblogic&quot;）不指定则自动指纹识别</span><br><span class="line">  -c CMD, --cmd CMD     自定义远程命令执行执行的命令,默认是echo随机md5</span><br><span class="line">  -v VULN, --vuln VULN  利用漏洞,需要指定漏洞编号 (e.g. -v &quot;CVE-2019-2729&quot;)</span><br><span class="line">  -t NUM, --thread NUM  扫描线程数量,默认10线程</span><br><span class="line">  --dnslog server       dnslog 服务器 (hyuga,dnslog,ceye) 默认自动轮询</span><br><span class="line">  --output-text file    扫描结果输出到 txt 文件 (e.g. &quot;result.txt&quot;)</span><br><span class="line">  --output-json file    扫描结果输出到 json 文件 (e.g. &quot;result.json&quot;)</span><br><span class="line">  --proxy-socks SOCKS   使用 socks 代理 (e.g. --proxy-socks 127.0.0.1:1080)</span><br><span class="line">  --proxy-http HTTP     使用 http 代理 (e.g. --proxy-http 127.0.0.1:8080)</span><br><span class="line">  --user-agent UA       允许自定义 User-Agent</span><br><span class="line">  --fofa-size SIZE      fofa api 调用资产数量，默认100，可用(1-10000)</span><br><span class="line">  --delay DELAY         延时时间,每隔多久发送一次,默认 0s</span><br><span class="line">  --timeout TIMEOUT     超时时间,默认 5s</span><br><span class="line">  --list                显示支持的漏洞列表</span><br><span class="line">  --debug               exp 模式显示 request 和 responses, poc 模式显示扫描漏洞列表</span><br><span class="line">  --check               目标存活检测 (on and off), 默认是 on</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>参数和例子都给的很全，记录一下做一个备忘</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 测试所有漏洞 poc 不指定 -a all 将默认开启指纹识别</span><br><span class="line">python3 vulmap.py -u http://example.com</span><br><span class="line"></span><br><span class="line"># 检查站点是否存在 struts2 漏洞</span><br><span class="line">python3 vulmap.py -u http://example.com -a struts2</span><br><span class="line"></span><br><span class="line"># 对 http://example.com:7001 进行 WebLogic 的 CVE-2019-2729 漏洞利用</span><br><span class="line">python3 vulmap.py -u http://example.com:7001 -v CVE-2019-2729</span><br><span class="line">python3 vulmap.py -u http://example.com:7001 -m exp -v CVE-2019-2729</span><br><span class="line"></span><br><span class="line"># 批量扫描 list.txt 中的 url</span><br><span class="line">python3 vulmap.py -f list.txt</span><br><span class="line"></span><br><span class="line"># 扫描结果导出到 result.json</span><br><span class="line">python3 vulmap.py -u http://example.com:7001 --output-json result.json</span><br><span class="line"></span><br><span class="line"># 调用 fofa api 批量扫描</span><br><span class="line">python3 vulmap.py --fofa app=Apache-Shiro</span><br></pre></td></tr></table></figure>
+
+<p>贴个运行截图</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1636610739920-2021-11-1114:05:39.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%89%AB%E6%8F%8F%E5%99%A8/" rel="tag"># 扫描器</a>
+              <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"># 工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/10/%E8%B5%84%E4%BA%A7%E6%94%B6%E9%9B%86%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/" rel="prev" title="资产收集工具整理">
+      <i class="fa fa-chevron-left"></i> 资产收集工具整理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/12/%E5%A4%8D%E7%8E%B0cve-2021-33026/" rel="next" title="复现cve-2021-33026">
+      复现cve-2021-33026 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#xray"><span class="nav-number">1.</span> <span class="nav-text">xray</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.1.</span> <span class="nav-text">代理模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E5%90%88bp%E4%BD%BF%E7%94%A8"><span class="nav-number">1.1.1.</span> <span class="nav-text">结合bp使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%88%AC%E8%99%AB%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">爬虫模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%89%AB%E6%8F%8F%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.3.</span> <span class="nav-text">服务扫描模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dismap"><span class="nav-number">2.</span> <span class="nav-text">dismap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vulmap"><span class="nav-number">3.</span> <span class="nav-text">vulmap</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Harry Smith"
+      src="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+  <p class="site-author-name" itemprop="name">Harry Smith</p>
+  <div class="site-description" itemprop="description">取次花丛懒回顾，半缘修道半缘君</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Harry Smith</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://harrysmith-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lycshub.github.io/2021/11/11/web%E6%89%AB%E6%8F%8F%E5%99%A8%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/";
+    this.page.identifier = "2021/11/11/web扫描器工具整理/";
+    this.page.title = "Web扫描器工具整理";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://harrysmith-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

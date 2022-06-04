@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat-32*32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat-16*16.ico">
+  <link rel="mask-icon" href="/images/cat-32*32.ico" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"lycshub.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="昨天整了半天没有整出来的那个结果最后是一个包名引用错了.. 在MANIFEST.MF中使用的包名和我自己的包名没有对上… 首先搬运这个师傅关于java Instrument的原理   javaagent在maven项目里面修改pom.xml文件然后添加入build的选项 1234567891011121314151617181920212223242526272829303132&lt;packa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java插桩(javaagent)">
+<meta property="og:url" content="https://lycshub.github.io/2021/11/25/java%E6%8F%92%E6%A1%A9-javaagent/index.html">
+<meta property="og:site_name" content="Lyc&#39;s Blog">
+<meta property="og:description" content="昨天整了半天没有整出来的那个结果最后是一个包名引用错了.. 在MANIFEST.MF中使用的包名和我自己的包名没有对上… 首先搬运这个师傅关于java Instrument的原理   javaagent在maven项目里面修改pom.xml文件然后添加入build的选项 1234567891011121314151617181920212223242526272829303132&lt;packa">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637811098130-2021-11-2511:31:38.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637811051074-2021-11-2511:30:51.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637809667716-2021-11-2511:07:47.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637809392632-2021-11-2511:03:12.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637810470431-2021-11-2511:21:10.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637810617995-2021-11-2511:23:38.png">
+<meta property="og:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637819013265-2021-11-2513:43:33.png">
+<meta property="article:published_time" content="2021-11-25T02:55:48.000Z">
+<meta property="article:modified_time" content="2022-03-28T11:46:15.274Z">
+<meta property="article:author" content="Harry Smith">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/LycsHub/ImageHosting/raw/master/1637811098130-2021-11-2511:31:38.png">
+
+<link rel="canonical" href="https://lycshub.github.io/2021/11/25/java%E6%8F%92%E6%A1%A9-javaagent/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>java插桩(javaagent) | Lyc's Blog</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-212139889-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-212139889-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Lyc's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://lycshub.github.io/2021/11/25/java%E6%8F%92%E6%A1%A9-javaagent/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+      <meta itemprop="name" content="Harry Smith">
+      <meta itemprop="description" content="取次花丛懒回顾，半缘修道半缘君">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lyc's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          java插桩(javaagent)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-11-25 10:55:48" itemprop="dateCreated datePublished" datetime="2021-11-25T10:55:48+08:00">2021-11-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-03-28 19:46:15" itemprop="dateModified" datetime="2022-03-28T19:46:15+08:00">2022-03-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8F%92%E6%A1%A9/" itemprop="url" rel="index"><span itemprop="name">插桩</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2021/11/25/java%E6%8F%92%E6%A1%A9-javaagent/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2021/11/25/java插桩-javaagent/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>昨天整了半天没有整出来的那个结果最后是一个包名引用错了..</p>
+<p>在MANIFEST.MF中使用的包名和我自己的包名没有对上…</p>
+<p>首先搬运<a target="_blank" rel="noopener" href="http://rui0.cn/archives/1063">这个师傅</a>关于java Instrument的原理</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637811098130-2021-11-2511:31:38.png"></p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637811051074-2021-11-2511:30:51.png"></p>
+<h2 id="javaagent"><a href="#javaagent" class="headerlink" title="javaagent"></a>javaagent</h2><p>在maven项目里面修改pom.xml文件然后添加入build的选项</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-jar-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">archive</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">manifestEntries</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Project-name</span>&gt;</span>javaagent<span class="tag">&lt;/<span class="name">Project-name</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Project-version</span>&gt;</span>1.0<span class="tag">&lt;/<span class="name">Project-version</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Premain-Class</span>&gt;</span>com.javaagent.MyAgent<span class="tag">&lt;/<span class="name">Premain-Class</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Can-Redefine-Classes</span>&gt;</span>true<span class="tag">&lt;/<span class="name">Can-Redefine-Classes</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">Can-Retransform-Classes</span>&gt;</span>true<span class="tag">&lt;/<span class="name">Can-Retransform-Classes</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">manifestEntries</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">archive</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">skip</span>&gt;</span>true<span class="tag">&lt;/<span class="name">skip</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">source</span>&gt;</span>1.7<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">target</span>&gt;</span>1.7<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>加入packing和build标签，</p>
+<p>首先做一个MyAgent类，导入了<code>java.lang.instrument.Instrumentation</code>的接口</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637809667716-2021-11-2511:07:47.png"></p>
+<p>这是一个Java1.6加进来的接口，作用就是你通过jvmti代理引用程序来jvm的访问（主要用于类的动态改变和操作），这里只是将其用于一个在main函数执行之前的劫持并加载我们自己的类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//src/main/java/com/javaagent/MyAgent.java</span></span><br><span class="line"><span class="keyword">package</span> com.javaagent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAgent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String args, Instrumentation instrumentation)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello javaagent permain:&quot;</span>+args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>上面这个premain方法就是Instrmentation中提供的一个方法，可以在main运行前先运行premain函数里面的内容。</p>
+<p>接下来定义新一个新的类用来执行main函数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//src/test/java/MyAgentTest.java</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAgentTest</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;main&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>编辑一下MANIFEST.MF文件</p>
+<p><strong>在这个函数中需要定义好一个Premain-Class选项，这个用于定位刚刚写的MyAgent那个包含了Premain函数的类（就是包中类的位置），配置项填错就没法运行。</strong></p>
+<p>然后使用maven build这个package</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637809392632-2021-11-2511:03:12.png"></p>
+<p>最后配置vm options来添加一个javaagent在启动时添加参数</p>
+<p><code>-javaagent:这里是之前package打包出来的jar包路径.jar=1</code></p>
+<p>后面的参数1是premain函数接收的参数args。</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637810470431-2021-11-2511:21:10.png"></p>
+<p>最后运行这个MyAgentTest.java</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637810617995-2021-11-2511:23:38.png"></p>
+<h2 id="使用ByteBuddy构建一个java-Agent"><a href="#使用ByteBuddy构建一个java-Agent" class="headerlink" title="使用ByteBuddy构建一个java Agent"></a>使用ByteBuddy构建一个java Agent</h2><p>只需要加依赖然后修改一下就好,添加两个依赖,和<a href="https://lycshub.github.io/2021/11/24/java-ByteBuddy/">之前文章</a>一样先导入ByteBuddy</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.bytebuddy<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>byte-buddy<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.12.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-agent --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>net.bytebuddy<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>byte-buddy-agent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.12.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="重写premain方法"><a href="#重写premain方法" class="headerlink" title="重写premain方法"></a>重写<code>premain</code>方法</h3><p>官方教程给的使用ByteBuddy创建一个java Agent的方法</p>
+<h4 id="创建-Java-Agents"><a href="#创建-Java-Agents" class="headerlink" title="创建 Java Agents"></a>创建 Java Agents</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ToStringAgent</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String arguments, Instrumentation instrumentation)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> AgentBuilder.Default()</span><br><span class="line">        .type(isAnnotatedWith(ToString.class))</span><br><span class="line">        .transform(<span class="keyword">new</span> AgentBuilder.Transformer() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="keyword">public</span> DynamicType.<span class="function">Builder <span class="title">transform</span><span class="params">(DynamicType.Builder builder,</span></span></span><br><span class="line"><span class="params"><span class="function">                                              TypeDescription typeDescription,</span></span></span><br><span class="line"><span class="params"><span class="function">                                              ClassLoader classloader)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> builder.method(named(<span class="string">&quot;toString&quot;</span>))</span><br><span class="line">                      .intercept(FixedValue.value(<span class="string">&quot;transformed&quot;</span>));</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;).installOn(instrumentation);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>然后根据这个形式去写</p>
+  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.javaagent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.agent.builder.AgentBuilder;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.description.method.MethodDescription;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.description.type.TypeDescription;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.dynamic.DynamicType;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.implementation.MethodDelegation;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.matcher.ElementMatchers;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.utility.JavaModule;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.instrument.Instrumentation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAgent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">premain</span><span class="params">(String args, Instrumentation instrumentation)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"><span class="comment">//        System.out.println(&quot;Hello javaagent permain:&quot;+args);</span></span><br><span class="line">        System.out.println(<span class="string">&quot;this is an perform monitor agent.&quot;</span>);</span><br><span class="line"></span><br><span class="line">        AgentBuilder.Transformer transformer = <span class="keyword">new</span> AgentBuilder.Transformer() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="keyword">public</span> DynamicType.Builder&lt;?&gt; transform(DynamicType.Builder&lt;?&gt; builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule <span class="keyword">module</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> builder</span><br><span class="line">                    .method(ElementMatchers.&lt;MethodDescription&gt;any()) <span class="comment">// 拦截任意方法</span></span><br><span class="line">                    .intercept(MethodDelegation.to(TimeInterceptor.class)); <span class="comment">// 委托</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        AgentBuilder.Listener listener = <span class="keyword">new</span> AgentBuilder.Listener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDiscovery</span><span class="params">(String typeName, ClassLoader classLoader, JavaModule <span class="keyword">module</span>, <span class="keyword">boolean</span> loaded)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onTransformation</span><span class="params">(TypeDescription typeDescription, ClassLoader classLoader, JavaModule <span class="keyword">module</span>, <span class="keyword">boolean</span> loaded, DynamicType dynamicType)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onIgnored</span><span class="params">(TypeDescription typeDescription, ClassLoader classLoader, JavaModule <span class="keyword">module</span>, <span class="keyword">boolean</span> loaded)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(String typeName, ClassLoader classLoader, JavaModule <span class="keyword">module</span>, <span class="keyword">boolean</span> loaded, Throwable throwable)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onComplete</span><span class="params">(String typeName, ClassLoader classLoader, JavaModule <span class="keyword">module</span>, <span class="keyword">boolean</span> loaded)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> AgentBuilder</span><br><span class="line">                .Default()</span><br><span class="line">                .type(ElementMatchers.nameStartsWith(<span class="string">&quot;com.javaagent.MyAgentTest&quot;</span>)) <span class="comment">// 指定需要拦截的类</span></span><br><span class="line">                .transform(transformer)</span><br><span class="line">                .with(listener)</span><br><span class="line">                .installOn(instrumentation);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="实现委托"><a href="#实现委托" class="headerlink" title="实现委托"></a>实现委托</h3>  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.javaagent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.implementation.bind.annotation.Origin;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.implementation.bind.annotation.RuntimeType;</span><br><span class="line"><span class="keyword">import</span> net.bytebuddy.implementation.bind.annotation.SuperCall;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Callable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimeInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="meta">@RuntimeType</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">intercept</span><span class="params">(<span class="meta">@Origin</span> Method method,</span></span></span><br><span class="line"><span class="params"><span class="function">                                   <span class="meta">@SuperCall</span> Callable&lt;?&gt; callable)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 原有函数执行</span></span><br><span class="line">            <span class="keyword">return</span> callable.call();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            System.out.println(method + <span class="string">&quot;: took &quot;</span> + (System.currentTimeMillis() - start) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="MyAgentTest进行调用"><a href="#MyAgentTest进行调用" class="headerlink" title="MyAgentTest进行调用"></a><code>MyAgentTest</code>进行调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.javaagent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyAgentTest</span> </span>&#123;</span><br><span class="line"><span class="comment">//    public static void main(String[] args) &#123;</span></span><br><span class="line"><span class="comment">//        System.out.println(&quot;main&quot;);</span></span><br><span class="line"><span class="comment">//    &#125;</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fun1</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;this is fun 1.&quot;</span>);</span><br><span class="line">    Thread.sleep(<span class="number">500</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fun2</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;this is fun 2.&quot;</span>);</span><br><span class="line">        Thread.sleep(<span class="number">500</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -javaagent:这里依旧是包的路径/javaagent-1.0-SNAPSHOT.jar</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        MyAgentTest test = <span class="keyword">new</span> MyAgentTest();</span><br><span class="line">        test.fun1();</span><br><span class="line">        test.fun2();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>​        同样先build然后在进行运行</p>
+<p><img src="https://github.com/LycsHub/ImageHosting/raw/master/1637819013265-2021-11-2513:43:33.png"></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="http://www.jinyunlong.xyz/articles/2021/05/15/1621089190040.html">http://www.jinyunlong.xyz/articles/2021/05/15/1621089190040.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/tr1ple/p/12709402.html">https://www.cnblogs.com/tr1ple/p/12709402.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/hawkingfoo/demo-agent">https://github.com/hawkingfoo/demo-agent</a></p>
+<p><a target="_blank" rel="noopener" href="http://rui0.cn/archives/1063">http://rui0.cn/archives/1063</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.noobyard.com/article/p-smvzgpzs-dh.html">http://www.noobyard.com/article/p-smvzgpzs-dh.html</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/24/java-ByteBuddy/" rel="prev" title="java ByteBuddy">
+      <i class="fa fa-chevron-left"></i> java ByteBuddy
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/26/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E5%B7%A5%E5%85%B7%E6%95%B4%E7%90%86/" rel="next" title="渗透测试工具整理">
+      渗透测试工具整理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#javaagent"><span class="nav-number">1.</span> <span class="nav-text">javaagent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8ByteBuddy%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AAjava-Agent"><span class="nav-number">2.</span> <span class="nav-text">使用ByteBuddy构建一个java Agent</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%86%99premain%E6%96%B9%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">重写premain方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-Java-Agents"><span class="nav-number">2.1.1.</span> <span class="nav-text">创建 Java Agents</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%A7%94%E6%89%98"><span class="nav-number">2.2.</span> <span class="nav-text">实现委托</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MyAgentTest%E8%BF%9B%E8%A1%8C%E8%B0%83%E7%94%A8"><span class="nav-number">2.3.</span> <span class="nav-text">MyAgentTest进行调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Harry Smith"
+      src="https://gitee.com/tjdx1817054/typora/raw/master/natumetakasi-2021-11-318:56:10.jpg">
+  <p class="site-author-name" itemprop="name">Harry Smith</p>
+  <div class="site-description" itemprop="description">取次花丛懒回顾，半缘修道半缘君</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Harry Smith</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script size="300" alpha="0.6" zIndex="-1" src="//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-ribbon@1/canvas-ribbon.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/medium-zoom@1/dist/medium-zoom.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://harrysmith-1.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lycshub.github.io/2021/11/25/java%E6%8F%92%E6%A1%A9-javaagent/";
+    this.page.identifier = "2021/11/25/java插桩-javaagent/";
+    this.page.title = "java插桩(javaagent)";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://harrysmith-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
