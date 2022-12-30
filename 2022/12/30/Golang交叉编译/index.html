@@ -20,17 +20,20 @@
     var CONFIG = {"hostname":"lycshub.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":true,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="取次花丛懒回顾，半缘修道半缘君">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Lyc&#39;s Blog">
-<meta property="og:url" content="https://lycshub.github.io/tags/%E8%B8%A9%E5%9D%91/index.html">
+  <meta name="description" content="阳🐑了,然后趁这段时间,稍微整理一下这段时间记下来的笔记. 用到golang的交叉编译是因为想在路由器上使用cloudreve,但是路由器的CPU指令集是mips的,开发者那没有预编译这个版本,然后在我那个性能孱弱的路由器上跑docker就算了,所以就打算自己编译下. 目标: Darwin平台 交叉编译golang程序到 mips平台下可执行程序.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Golang交叉编译">
+<meta property="og:url" content="https://lycshub.github.io/2022/12/30/Golang%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/index.html">
 <meta property="og:site_name" content="Lyc&#39;s Blog">
-<meta property="og:description" content="取次花丛懒回顾，半缘修道半缘君">
+<meta property="og:description" content="阳🐑了,然后趁这段时间,稍微整理一下这段时间记下来的笔记. 用到golang的交叉编译是因为想在路由器上使用cloudreve,但是路由器的CPU指令集是mips的,开发者那没有预编译这个版本,然后在我那个性能孱弱的路由器上跑docker就算了,所以就打算自己编译下. 目标: Darwin平台 交叉编译golang程序到 mips平台下可执行程序.">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-12-30T13:36:05.000Z">
+<meta property="article:modified_time" content="2022-12-30T14:12:08.165Z">
 <meta property="article:author" content="Harry Smith">
+<meta property="article:tag" content="Go">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://lycshub.github.io/tags/%E8%B8%A9%E5%9D%91/">
+<link rel="canonical" href="https://lycshub.github.io/2022/12/30/Golang%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/">
 
 
 <script id="page-configurations">
@@ -38,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Tag: 踩坑 | Lyc's Blog</title>
+  <title>Golang交叉编译 | Lyc's Blog</title>
   
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-212139889-1"></script>
     <script>
@@ -193,57 +196,141 @@
         <div class="content-wrap">
           
 
-          <div class="content tag">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://lycshub.github.io/2022/12/30/Golang%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://raw.githubusercontent.com/LycsHub/ImageHosting/master/natumetakasi-2021-11-318%3A56%3A10.jpg">
+      <meta itemprop="name" content="Harry Smith">
+      <meta itemprop="description" content="取次花丛懒回顾，半缘修道半缘君">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lyc's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Golang交叉编译
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-12-30 21:36:05 / Modified: 22:12:08" itemprop="dateCreated datePublished" datetime="2022-12-30T21:36:05+08:00">2022-12-30</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">编程语言</span></a>
+                </span>
+            </span>
+
+          
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">踩坑
-          <small>Tag</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2022/12/30/Golang%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2022/12/30/Golang交叉编译/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
+        <p>阳🐑了,然后趁这段时间,稍微整理一下这段时间记下来的笔记.</p>
+<p>用到golang的交叉编译是因为想在路由器上使用cloudreve,但是路由器的CPU指令集是mips的,开发者那没有预编译这个版本,然后在我那个性能孱弱的路由器上跑docker就算了,所以就打算自己编译下.</p>
+<p>目标: Darwin平台 交叉编译golang程序到 mips平台下可执行程序.</p>
+<span id="more"></span>
+
+
+
+<h2 id="1-安装交叉编译工具链"><a href="#1-安装交叉编译工具链" class="headerlink" title="1.安装交叉编译工具链"></a>1.安装交叉编译工具链</h2><p>首先是参考了这个老哥的译文</p>
+<p><a target="_blank" rel="noopener" href="https://saekiraku.github.io/article/18577/">https://saekiraku.github.io/article/18577/</a></p>
+<p>装上了MacOS下用于交叉编译的c库,我直接装全了,省的以后还有什么奇怪平台的需求,也可以只with一部分.</p>
+<p><code>brew install FiloSottile/musl-cross/musl-cross --with-x86_64 --with-aarch64 --with-arm-hf --with-i486 --with-arm --with-mips --with-mipsel --with-mips64 --with-mips64el</code></p>
+<h2 id="2-开始go-build"><a href="#2-开始go-build" class="headerlink" title="2.开始go build"></a>2.开始go build</h2><p><strong>主要是踩了一个坑,因为被编译的程序需要sqlite环境,sqlite是需要目标系统本地C类库支持的,所以必须要开启CGO,也就是CGO_ENABLED=1</strong></p>
+<ul>
+<li><p>GOOS是目标平台</p>
+</li>
+<li><p>GOARCH是目标cpu指令集</p>
+</li>
+<li><p>GOMIPS是mips的特有软浮点</p>
+</li>
+<li><p>CC就是指令集了这里应该放绝对路径的目标平台交叉编译指令集</p>
+</li>
+</ul>
+<p>将上面几点放在一条命令中,然后build</p>
+<p><code>GOOS=linux GOARCH=mipsle GOMIPS=softfloat CGO_ENABLED=1 CC=mipsel-linux-muslsf CGO_LDFLAGS=&quot;-static&quot; go build -a -ldflags=&quot;-s -w&quot; -o cloudreve</code></p>
+<p>最后编译完成的二进制就可以直接在目标平台上运行了.</p>
+<p>然后最后顺便给我的cloudreve加了一个https,<code>acme.sh</code>这个项目非常的好用.</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-11-20T14:49:24+08:00"
-              content="2021-11-20">
-          11-20
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/11/20/frp%E7%9A%84token-does-note-match%E9%97%AE%E9%A2%98/" itemprop="url">
-            <span itemprop="name">frp的token does note match问题</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/04/popOS-vmware%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98/" rel="prev" title="popOS_vmware无法启动问题">
+      <i class="fa fa-chevron-left"></i> popOS_vmware无法启动问题
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -290,6 +377,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%B7%A5%E5%85%B7%E9%93%BE"><span class="nav-number">1.</span> <span class="nav-text">1.安装交叉编译工具链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%BC%80%E5%A7%8Bgo-build"><span class="nav-number">2.</span> <span class="nav-text">2.开始go build</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -418,6 +506,26 @@
   }
   // defer loading until the whole page loading is completed
   window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://lycshub.github.io/2022/12/30/Golang%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91/";
+    this.page.identifier = "2022/12/30/Golang交叉编译/";
+    this.page.title = "Golang交叉编译";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://harrysmith-1.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
 </script>
 
 </body>
